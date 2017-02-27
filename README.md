@@ -28,8 +28,8 @@ Also possible to make appointments with them.
        Run
         > lite-server 
 
-    #### NOTE: 
-    
+#### NOTE: 
+
        Run Steps 2 and 3 in two different terminal windows.
 
 =======================================================================================

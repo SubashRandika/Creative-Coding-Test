@@ -18,7 +18,7 @@ Also possible to make appointments with them.
 
 #### Steps:
     1. Run 
-        > npm insatll -g lite-server json-server
+        > npm install -g lite-server json-server
 
     2. Go to 'data' folder inside the project through terminal.
        Run

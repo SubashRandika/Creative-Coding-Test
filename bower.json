@@ -1,0 +1,16 @@
+{
+  "name": "parkerbankinternationalapp",
+  "authors": [
+    "Randika Rodrigo <subash.rodrigo@gmail.com>"
+  ],
+  "description": "Application show staff member details and make appintments on them",
+  "main": "index.html",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [],
+  "dependencies": {
+    "angular-material": "^1.1.3",
+    "angular-material-icons": "^0.7.1"
+  }
+}

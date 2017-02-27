@@ -1,0 +1,15 @@
+{
+  "name": "parkerbankinternationalapp",
+  "version": "1.0.0",
+  "description": "Application show staff member details and make appintments on them",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Randika Rodrigo <subash.rodrigo@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "faker": "^4.1.0",
+    "lodash": "^4.17.4"
+  }
+}

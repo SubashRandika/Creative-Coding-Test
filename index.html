@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="parkerbank.app">
+
+<head>
+    <title>Parker Bank International Application</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+    <link rel="stylesheet" href="assets/libs/angular-material/angular-material.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body ng-controller="StaffController as vm" layout="column">
+    <!-- For testing to check data recieve on front end -->
+    <!--<pre>{{vm.staffMembers | json}}</pre>-->
+
+    <!-- Header Tool bar Section -->
+    <md-toolbar layout="row" class="md-whiteframe-z2 site-content-toolbar">
+        <ng-md-icon icon="menu" class="menu_icon md-padding" size="40" hide-gt-sm ng-click="vm.toggleMemberList()" aria-label="Show Staff List"></ng-md-icon>
+        <div hide-xs class="company_logo">
+            <img ng-src="./assets/img/Bank_Logo.png" alt="Company Logo" />
+        </div>
+        <!--<h2 hide show-gt-sm class="md-toolbar-tools">Parker Bank International</h2>-->
+        <h3 class="md-toolbar-tools" layout-align="center center" ng-cloak>{{ vm.selectedMember.name.full }}</h3>
+        <ng-md-icon hide-xs icon="dashboard" class="menu_icon md-padding" size="30" aria-label="Dashboard">
+            <md-tooltip md-direction="bottom">Dashboard</md-tooltip>
+        </ng-md-icon>
+        <ng-md-icon hide-xs icon="notifications" class="menu_icon md-padding" size="30" aria-label="Notifications">
+            <md-tooltip md-direction="bottom">Notifications</md-tooltip>
+        </ng-md-icon>
+        <ng-md-icon hide-xs icon="person" class="menu_icon md-padding" size="30" aria-label="User Profile">
+            <md-tooltip md-direction="bottom">User Profile</md-tooltip>
+        </ng-md-icon>
+        <md-menu>
+            <ng-md-icon ng-click="vm.openSideMenu($mdMenu, $event)" hide-gt-xs icon="more_vert" class="menu_icon md-padding" size="30"
+                aria-label="Side Menu"></ng-md-icon>
+                <md-menu-content width="4">
+                    <md-menu-item>
+                        <md-button ng-click="null">
+                            <ng-md-icon icon="dashboard" class="menu_icon md-padding" size="20" aria-label="Dashboard"></ng-md-icon>
+                            <p class="md-padding" flex>Dashboard</p>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-click="null">
+                            <ng-md-icon icon="notifications" class="menu_icon md-padding" size="20" aria-label="Notifications"></ng-md-icon>
+                            <p class="md-padding" flex>Notifications</p>
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-click="null">
+                            <ng-md-icon icon="person" class="menu_icon md-padding" size="20" aria-label="User Profile"></ng-md-icon>
+                            <p class="md-padding" flex>User Profile</p>
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+        </md-menu>
+    </md-toolbar>
+
+    <!-- Main Content Area -->
+    <div flex layout="row">
+        <!-- Side Navigation bar section -->
+        <div class="md-whiteframe-z3" layout="column">
+            <md-sidenav flex class="md-sidenav-left member_list_wrapper" md-whiteframe="3" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')">
+                <form ng-submit="$event.preventDefault()" class="md-padding search_background">
+                    <md-autocomplete md-selected-item="vm.selectedItem" md-search-text-change="vm.searchTextChange(vm.searchText)" md-search-text="vm.searchText"
+                        md-selected-item-change="vm.selectedItemChange(item)" md-items="item in vm.staffMembers | filter: vm.searchText"
+                        md-item-text="item.name.full" md-min-length="1" placeholder="Search...">
+                        <md-item-template>
+                            <span md-highlight-text="vm.searchText" md-highlight-flags="^i" ng-cloak>{{item.name.full}}</span>
+                        </md-item-template>
+                        <md-not-found ng-cloak>
+                            No matching "{{vm.searchText}}" were found.
+                        </md-not-found>
+                        </md-autocomplete>
+                </form>
+                <md-content class="scroll-box" md-whiteframe="3">
+                    <md-list flex>
+                        <md-list-item class="md-2-line" ng-repeat="member in vm.staffMembers | filter: vm.searchText" ng-click="vm.selectStaffMember(member,$index)"
+                            ng-class="{'selectedItem' : $index === vm.selectedMemberIndex }">
+                            <img ng-src="{{ member.avatar }}" class="md-avatar" alt="" />
+                            <div class="md-list-item-text" layout="column">
+                                <h3 ng-cloak>{{ member.name.full }}</h3>
+                                <p ng-cloak>Phone: {{ member.phone }}</p>
+                            </div>
+                            <md-divider md-inset></md-divider>
+                            </md-list-item>
+                    </md-list>
+                </md-content>
+            </md-sidenav>
+        </div>
+        <!-- Form and Profile details section -->
+        <md-content flex layout="row" layout-xs="column" class="md-padding profile_body">
+            <div flex-gt-xs="60" class="md-padding md-block">
+                <div class="appointment_form_wrapper" flex layout="row">
+                    <div flex md-whiteframe="{{formHeight}}" ng-init="formHeight = 5" ng-mouseenter="formHeight = 10" ng-mouseleave="formHeight = 5">
+                        <md-toolbar class="md-padding header_container" layout="column" layout-align="stretch">
+                            <div class="hearder_overlay md-padding" layout="column" md-whiteframe="5">
+                                <div class="md-body-2">Make Appointment</div>
+                                <div class="md-caption">Complete your appointment here</div>
+                            </div>
+                        </md-toolbar>
+                        <md-content class="md-padding" layout="column" layout-align="stretch">
+                            <form class="appointment_form" name="appointmentForm" ng-submit="">
+                                <div layout-gt-sm="row">
+                                    <ng-md-icon icon="person" class="form_icon md-padding" size="20" aria-label="First Name"></ng-md-icon>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label class="input_label">First name</label>
+                                        <input required name="firstName" ng-model="appointment.firstName" />
+                                        <div ng-messages="appointmentForm.firstName.$error">
+                                            <div ng-message="required">This is required.</div>
+                                        </div>
+                                    </md-input-container>
+                                    <ng-md-icon icon="person" class="form_icon md-padding" size="20" aria-label="Last Name"></ng-md-icon>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label class="input_label">Last name</label>
+                                        <input required name="lastName" ng-model="appointment.lastName" />
+                                        <div ng-messages="appointmentForm.lastName.$error">
+                                            <div ng-message="required">This is required.</div>
+                                        </div>
+                                    </md-input-container>
+                                </div>
+                                <div layout-gt-sm="row">
+                                    <ng-md-icon icon="phone" class="form_icon md-padding" size="20" aria-label="Phone"></ng-md-icon>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label class="input_label">Phone Number</label>
+                                        <input required name="phoneNumber" ng-model="appointment.phoneNumber" ng-pattern="/^[(][0-9]{3}[)] [0-9]{3}-[0-9]{4}$/" />
+                                        <div ng-messages="appointmentForm.phoneNumber.$error">
+                                            <div ng-message="required">This is required.</div>
+                                        </div>
+                                        <div ng-messages="appointmentForm.phoneNumber.$error">
+                                            <div ng-message="pattern">(###) ###-#### - Please enter a valid phone number.</div>
+                                        </div>
+                                    </md-input-container>
+                                    <ng-md-icon icon="email" class="form_icon md-padding" size="20" aria-label="Email"></ng-md-icon>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label class="input_label">Email</label>
+                                        <input required name="email" ng-model="appointment.email" ng-pattern="/^.+@.+\..+$/"/>
+                                        <div ng-messages="appointmentForm.email.$error">
+                                            <div ng-message="required">This is required.</div>
+                                        </div>
+                                        <div ng-messages="appointmentForm.email.$error">
+                                            <div ng-message="pattern">Please enter a valid email address.</div>
+                                        </div>
+                                    </md-input-container>
+                                </div>
+                                <div layout-gt-sm="row">
+                                    <ng-md-icon icon="location_on" class="form_icon md-padding" size="20" aria-label="Address"></ng-md-icon>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label class="input_label">Address</label>
+                                        <input />
+                                    </md-input-container>
+                                </div>
+                                <div layout-gt-sm="row">
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label>Date</label>
+                                        <md-datepicker required name="date" ng-model="vm.desiredDate"></md-datepicker>
+                                        <div ng-messages="appointmentForm.date.$error">
+                                            <div ng-message="required">This is required. Select from calendar. (MM/DD/YYYY)</div>
+                                        </div>
+                                    </md-input-container>
+                                </div>
+                                <div layout-gt-sm="row">
+                                    <ng-md-icon icon="comment" class="form_icon md-padding" size="20" aria-label="Reason"></ng-md-icon>
+                                    <md-input-container class="md-block" flex-gt-sm>
+                                        <label class="input_label">Reason</label>
+                                        <input/>
+                                    </md-input-container>
+                                </div>
+                                <div layout-gt-sm="row" layout-align="end">
+                                    <md-button class="md-raised md-primary" type="submit" ng-disabled="appointmentForm.$invalid" ng-class="">Submit</md-button>
+                                </div>
+                            </form>
+                        </md-content>
+                    </div>
+                </div>
+            </div>
+            <!-- Profile information card area -->
+            <div flex-gt-xs="40" class="md-padding md-block">
+                <div class="appointment_form_wrapper" flex layout="row">
+                    <div flex md-whiteframe="{{profHeight}}" ng-init="profHeight = 5" ng-mouseenter="profHeight = 10" ng-mouseleave="profHeight = 5">
+                        <md-toolbar layout="row" layout-align="space-between center">
+                            <div class="profile">
+                                <ng-md-icon ng-click="vm.toggleSelection()" icon="check_circle" ng-class="{ 'profile_selected': vm.isSelected, 'profile_not_selected': !vm.isSelected }"
+                                    size="30" aria-label="Selected"></ng-md-icon>
+                            </div>
+                            <div class="" layout="column" layout-align="center start">
+                                <div class="md-title" ng-cloak>{{ vm.selectedMember.name.full }}</div>
+                                <div class="md-caption" ng-cloak>At the age of {{ vm.selectedMember.age }}</div>
+                            </div>
+                            <img ng-cloak class="profile_card_avartar" md-whiteframe="10" ng-src="{{ vm.selectedMember.avatar }}" class="md-avatar" alt=""
+                            />
+                        </md-toolbar>
+                        <md-content class="md-padding" layout="column" layout-align="stretch">
+                            <div layout="column">
+                                <div class="md-body-2">Contact Info:</div>
+                                <md-divider class="profile_divider"></md-divider>
+                                <div layout="row">
+                                    <ng-md-icon icon="phone" class="profile_icon" size="15" aria-label="Phone"></ng-md-icon>
+                                    <div class="md-body-1" ng-cloak>{{ vm.selectedMember.phone }}</div>
+                                </div>
+                                <div layout="row">
+                                    <ng-md-icon icon="email" class="profile_icon" size="15" aria-label="Email"></ng-md-icon>
+                                    <div class="md-body-1" ng-cloak>{{ vm.selectedMember.email }}</div>
+                                </div>
+                                <div layout="row">
+                                    <ng-md-icon icon="location_on" class="profile_icon" size="15" aria-label="Address"></ng-md-icon>
+                                    <div class="md-body-1" ng-cloak>{{ vm.selectedMember.address.street }}, {{ vm.selectedMember.address.city }}, {{ vm.selectedMember.address.state
+                                        }}, {{ vm.selectedMember.address.zip }}</div>
+                                </div>
+                                <div layout="row" layout-align="center center">
+                                    <md-fab-speed-dial md-open="vm.isFabOpen" md-direction="left" class="md-scale" ng-mouseenter="vm.isFabOpen = true" ng-mouseleave="vm.isFabOpen = false">
+                                        <md-fab-trigger>
+                                            <md-button aria-label="menu" class="md-fab fab_button">
+                                                <ng-md-icon icon="menu" class="fab_icon" size="30" aria-label="Social Menu"></ng-md-icon>
+                                            </md-button>
+                                        </md-fab-trigger>
+                                        <md-fab-actions>
+                                            <md-button aria-label="Facebook" ng-click="vm.navigateTo(vm.selectedMember.social.facebook)" class="md-fab md-raised md-mini">
+                                                <ng-md-icon icon="facebook-box" class="facebook_icon" size="20" aria-label="Facebook"></ng-md-icon>
+                                            </md-button>
+                                            <md-button aria-label="Twitter" ng-click="vm.navigateTo(vm.selectedMember.social.twitter)" class="md-fab md-raised md-mini">
+                                                <ng-md-icon icon="twitter" class="twitter_icon" size="20" aria-label="Twitter"></ng-md-icon>
+                                            </md-button>
+                                            <md-button aria-label="Linkedin" ng-click="vm.navigateTo(vm.selectedMember.social.linkedin)" class="md-fab md-raised md-mini">
+                                                <ng-md-icon icon="linkedin" class="linkedin_icon" size="20" aria-label="Linkedin"></ng-md-icon>
+                                            </md-button>
+                                        </md-fab-actions>
+                                    </md-fab-speed-dial>
+                                </div>
+                                <div class="md-body-2">Experience:</div>
+                                <md-divider class="profile_divider"></md-divider>
+                                <div class="md-body-1 experience" ng-cloak>{{ vm.selectedMember.experience }}</div>
+                            </div>
+                        </md-content>
+                    </div>
+                </div>
+        </md-content>
+        </div>
+
+        <script type="text/javascript" src="assets/libs/angular/angular.min.js"></script>
+        <script type="text/javascript" src="assets/libs/angular-animate/angular-animate.min.js"></script>
+        <script type="text/javascript" src="assets/libs/angular-aria/angular-aria.min.js"></script>
+        <script type="text/javascript" src="assets/libs/angular-messages/angular-messages.min.js"></script>
+        <script type="text/javascript" src="assets/libs/angular-material/angular-material.min.js"></script>
+        <script type="text/javascript" src="assets/libs/angular-material-icons/angular-material-icons.min.js"></script>
+        <script type="text/javascript" src="app/app.module.js"></script>
+        <script type="text/javascript" src="app/components/staff-members/StaffController.js"></script>
+        <script type="text/javascript" src="app/components/staff-members/StaffService.js"></script>
+        <script type="text/javascript" src="app/shared/logger/LoggerFactory.js"></script>
+        <script type="text/javascript" src="app/components/staff-members/ToastController.js"></script>
+        <script type="text/ng-template" id="fav_toast_template.html">
+            <md-toast class="md-capsule" ng-controller="ToastController as vm" layout="row">
+                <span class="md-toast-text" flex>Added to the favorite list</span>
+                <md-button ng-click="vm.closeToast()" class="close_button">
+                    <ng-md-icon icon="cancel" class="close_icon" size="30" aria-label="Close"></ng-md-icon>
+                </md-button>
+            </md-toast>
+        </script>
+        <!--<script type="text/javascript" src=""></script>-->
+
+</body>
+
+</html>
